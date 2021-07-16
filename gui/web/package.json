@@ -12,7 +12,7 @@
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
     "react-tooltip-lite": "^1.10.0",
-    "stellar-sdk": "^3.0.0",
+    "stellar-sdk": "^8.2.3",
     "uuid": "^8.3.2"
   },
   "scripts": {
