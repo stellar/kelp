@@ -48,3 +48,39 @@ func Test_binanceExchangeWs_GetTickerPrice(t *testing.T) {
 		return
 	}
 }
+
+func Test_binanceExchangeWs_GetOrderBook(t *testing.T) {
+	if testing.Short() {
+		return
+	}
+
+	testBinanceExchangeWs, e := makeBinanceWs()
+	if !assert.NoError(t, e) {
+		return
+	}
+
+	for _, obDepth := range []int32{1, 5, 8, 10, 15, 16, 20} {
+
+		pair := model.TradingPair{Base: model.XLM, Quote: model.BTC}
+		ob, e := testBinanceExchangeWs.GetOrderBook(&pair, obDepth)
+		if !assert.NoError(t, e) {
+			return
+		}
+		assert.Equal(t, ob.Pair(), &pair)
+
+		if !assert.True(t, len(ob.Asks()) > 0, len(ob.Asks())) {
+			return
+		}
+		if !assert.True(t, len(ob.Bids()) > 0, len(ob.Bids())) {
+			return
+		}
+		assert.True(t, ob.Asks()[0].OrderAction.IsSell())
+		assert.True(t, ob.Asks()[0].OrderType.IsLimit())
+		assert.True(t, ob.Bids()[0].OrderAction.IsBuy())
+		assert.True(t, ob.Bids()[0].OrderType.IsLimit())
+		assert.True(t, ob.Asks()[0].Price.AsFloat() > 0)
+		assert.True(t, ob.Asks()[0].Volume.AsFloat() > 0)
+		assert.True(t, ob.Bids()[0].Price.AsFloat() > 0)
+		assert.True(t, ob.Bids()[0].Volume.AsFloat() > 0)
+	}
+}
